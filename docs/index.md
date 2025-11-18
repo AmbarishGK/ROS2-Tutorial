@@ -12,7 +12,7 @@ This ROS 2 course designed to run on
 This is built to teach ROS 2 step-by-step with hands-on examples.  
 
 - **Start with Tutorial 0** → Pull and run the Docker container.
-- **Then follow Tutorials 1–13** in order for progressive learning.
+- **Then follow Tutorials 1-13** in order for progressive learning.
 - Works on all major platforms via containerization.
 
 ---
@@ -133,7 +133,7 @@ All tutorials are in the `docs/` folder, and rendered online at:
 | 4 | Services and Actions |
 | 5 | TF2 and RViz2 |
 | 6 | URDF and Robot Description |
-| 7 | Gazebo – Empty World & Spawn |
+| 7 | Gazebo - Empty World & Spawn |
 | 8 | Gazebo Sensors and Plugins |
 | 9 | Navigation (Nav2) |
 | 10 | Record & Replay (rosbag2) |
@@ -176,7 +176,7 @@ If you need to change it:
 
 ✔️ Prebuilt ROS 2 Humble environment with GUI tools  
 ✔️ Works across Linux, macOS, and Windows  
-✔️ Includes all core tutorials 0–13  
+✔️ Includes all core tutorials 0-13  
 ✔️ Open-source and free to use for learning
 
 Enjoy your journey through **ROS 2 Connected Course!**
