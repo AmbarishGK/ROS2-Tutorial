@@ -144,5 +144,5 @@ ros2 run tf2_ros tf2_echo base_link camera_link
 
 ---
 
-**Author:** [Ambarish G.K](https://github.com/ambarishgk007)  
+**Author:** [Ambarish G.K](https://github.com/ambarishgk)  
 **Docker Hub:** [ambarishgk007/ros2-humble-rviz-gazebo](https://hub.docker.com/r/ambarishgk007/ros2-humble-rviz-gazebo)
