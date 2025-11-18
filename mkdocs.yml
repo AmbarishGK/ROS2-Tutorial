@@ -1,0 +1,51 @@
+site_name: ROS 2 Connected Course
+site_description: A fully explained, classroom-ready ROS 2 Humble course
+site_url: https://example.com/
+theme:
+  name: material
+  features:
+    - navigation.indexes
+    - navigation.expand
+    - search.highlight
+    - content.code.copy
+    - toc.integrate
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - pymdownx.tabbed
+  - pymdownx.inlinehilite
+  - attr_list
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ambarishgk007
+
+plugins:
+  - search
+
+docs_dir: docs
+
+nav:
+  - Home: index.md
+  - Cheatsheet: CHEATSHEET.md
+  - Tutorials:
+    - 0. Getting Started: 0_getting_started.md
+    - 1. Nodes, Topics, and Services: 1_nodes_topics_services.md
+    - 2. Parameters and Launch Files: 2_parameters_and_launchfiles.md
+    - 3. Create a Package and Pub/Sub: 3_create_package_pubsub.md
+    - 4. Services and Actions: 4_services_and_actions.md
+    - 5. TF2 and RViz2: 5_tf2_and_rviz2.md
+    - 6. URDF and Robot Description: 6_urdf_robot_description.md
+    - 7. Gazebo — Empty World & Spawn: 7_gazebo_empty_world_and_spawn.md
+    - 8. Gazebo — Sensors and Plugins: 8_gazebo_sensors_and_plugins.md
+    - 9. Navigation (Nav2) in Simulation: 9_navigation_nav2.md
+    - 10. Record and Replay with rosbag2: 10_record_and_replay_rosbag2.md
+    - 11. RQT, RViz, and TF Debugging: 11_rqt_rviz_tf_debugging.md
+    - 12. Custom Interfaces and Lifecycle: 12_custom_interfaces_and_lifecycle.md
+    - 13. Multi‑Robot and Networking: 13_multi_robot_and_networking.md
