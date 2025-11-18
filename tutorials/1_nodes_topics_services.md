@@ -14,46 +14,52 @@ Think of a robot: you might have one program (a node) for the camera, one for th
 ```bash
 sudo apt update
 sudo apt install ros-humble-turtlesim
+
 ```
 
 You might have to run many terminals for this.
 Now, let's run the `turtlesim` node:
 ```bash
-# In Terminal 1
+## In Terminal 1
 source /opt/ros/humble/setup.bash #add this to your bashrc if you can to avoid doing it everytime
 ros2 run turtlesim turtlesim_node
+
 ```
 Poof! A new window with a turtle should appear. That window *is* your node, running and waiting.
 
-### 2. See Your Running Node
+## 2. See Your Running Node
 Leave that first terminal running. Open a **new terminal** (Terminal 2). You have to `source` in *every... single... new... terminal*. (Don't worry, We ll add that to bashrc.)
 
 ```bash
-# In Terminal 2
+## In Terminal 2
 source /opt/ros/humble/setup.bash
+
 ```
 
 Now, let's ask ROS 2 what's running:
 ```bash
 ros2 node list
+
 ```
 It'll spit back `/turtlesim`. That's the name of the node you just launched. Pretty neat, right?
 
-### 3. Let's Run a *Second* Node
+## 3. Let's Run a *Second* Node
 Let's run one that can control the turtle.
 
 Open a **new terminal** (Terminal 3).
 ```bash
-# In Terminal 3
+## In Terminal 3
 source /opt/ros/humble/setup.bash
 ros2 run turtlesim turtle_teleop_key
+
 ```
 This terminal will just sit there, waiting for your input. This is also a node!
 
-### 4. Check Your Node List Again
+## 4. Check Your Node List Again
 Go back to **Terminal 2** and run the `list` command again:
 ```bash
 ros2 node list
+
 ```
 Now you'll see two nodes:
 * `/turtlesim`
@@ -78,6 +84,7 @@ The nodes don't know or care who is on the other end. They just shout into the v
 With your turtle stuff still running, go to **Terminal 2** and run:
 ```bash
 ros2 topic list
+
 ```
 You'll see a few, but the important ones are:
 * `/turtle1/cmd_vel` (This is the "command velocity" topic. The keyboard node publishes here.)
@@ -89,6 +96,7 @@ You'll see a few, but the important ones are:
 In **Terminal 2**, run:
 ```bash
 ros2 topic echo /turtle1/pose
+
 ```
 It'll just sit there. Now go to **Terminal 3** and use your arrow keys. Look back at Terminal 2, you're seeing a live stream of the turtle's position data! Press `Ctrl+C` in Terminal 2 to stop.
 
@@ -99,6 +107,7 @@ This command is a good, but it's just sending one single message.
 Run this in **Terminal 2**:
 ```bash
 ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"
+
 ```
 Your turtle should immediately move forward and spin. You just published your first message!
 
@@ -118,6 +127,7 @@ It's a two-way transaction.
 You guessed it. In **Terminal 2**, run:
 ```bash
 ros2 service list
+
 ```
 You'll see a bunch. Let's look at `/spawn`. This service, as you might guess, lets us spawn a new turtle!
 
@@ -127,6 +137,7 @@ We need to tell the service *where* to spawn the turtle and what its name should
 Run this in **Terminal 2**:
 ```bash
 ros2 service call /spawn turtlesim/srv/Spawn "{x: 2, y: 2, theta: 0.2, name: 'turtle2'}"
+
 ```
 A new turtle (`turtle2`) appears in your simulator. And your terminal shows you the *response* from the service: `{name: 'turtle2'}`.
 
@@ -144,6 +155,7 @@ Things will break. Nodes won't talk. Topics will be missing. It happens. Before 
 In **Terminal 2**, just run:
 ```bash
 ros2 doctor
+
 ```
 It'll run a bunch of checks on your network, your environment, and everything else.
 

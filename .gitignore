@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+*.log
+*.bag
+*.swp
+ros2_ws/
+
