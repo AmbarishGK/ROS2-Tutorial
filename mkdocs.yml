@@ -24,7 +24,7 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/ambarishgk007
+      link: https://github.com/ambarishgk
 
 plugins:
   - search
@@ -49,3 +49,7 @@ nav:
     - 11. RQT, RViz, and TF Debugging: 11_rqt_rviz_tf_debugging.md
     - 12. Custom Interfaces and Lifecycle: 12_custom_interfaces_and_lifecycle.md
     - 13. Multi‑Robot and Networking: 13_multi_robot_and_networking.md
+
+site_url: https://ambarishgk.github.io/ROS2-Tutorial/
+repo_url: https://github.com/ambarishgk/ROS2-Tutorial
+edit_uri: blob/main/docs/
