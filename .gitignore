@@ -9,3 +9,34 @@ site/
 .DS_Store
 .vscode/
 .idea/
+# python
+*.pyc
+__pycache__/
+.venv/
+*.egg-info/
+
+# colcon/ROS
+build/
+install/
+log/
+COLCON_IGNORE
+
+# outputs
+yolo_out/
+runs/
+
+# data (large or local)
+*.bag
+*.avi
+*.mp4
+*.mkv
+*.mov
+*.jpg
+*.png
+yolov8n.pt
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

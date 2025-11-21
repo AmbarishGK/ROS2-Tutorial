@@ -1,0 +1,57 @@
+# docker/Dockerfile.base
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=UTC \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    ROS_DISTRO=humble
+
+# Base OS
+RUN apt-get update && apt-get -y upgrade && rm -rf /var/lib/apt/lists/*
+
+# Essentials, GUI/X11, dev tools, Python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    locales tzdata ca-certificates gnupg2 lsb-release software-properties-common \
+    build-essential git curl wget vim nano sudo \
+    python3 python3-pip python3-venv python3-dev \
+    x11-apps mesa-utils libgl1 libgl1-mesa-dri \
+    iputils-ping net-tools less \
+ && rm -rf /var/lib/apt/lists/*
+RUN locale-gen en_US.UTF-8
+
+# ROS 2 repo
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+    -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+    > /etc/apt/sources.list.d/ros2.list
+
+# ROS 2 Humble desktop + Gazebo + colcon + rosdep
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-desktop-full \
+    ros-humble-gazebo-ros-pkgs ros-humble-gazebo-ros \
+    python3-colcon-common-extensions python3-rosdep \
+ && rm -rf /var/lib/apt/lists/*
+
+# rosdep init/update
+RUN set -e; if ! [ -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then rosdep init; fi; rosdep update
+
+# Non-root user
+ARG USERNAME=ros
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g ${GID} ${USERNAME} && \
+    useradd -m -s /bin/bash -u ${UID} -g ${GID} ${USERNAME} && \
+    groupadd -f video && groupadd -f render && usermod -aG video,render ${USERNAME} && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-${USERNAME} && \
+    chmod 0440 /etc/sudoers.d/90-${USERNAME}
+
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+
+# Auto-source ROS
+SHELL ["/bin/bash", "-c"]
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /home/${USERNAME}/.bashrc
+
+ENTRYPOINT ["/bin/bash", "-lc"]
+CMD ["bash"]

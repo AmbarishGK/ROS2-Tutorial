@@ -1,0 +1,12 @@
+# .dockerignore
+.git
+.gitignore
+**/__pycache__/
+**/*.pyc
+examples/build
+examples/install
+examples/log
+ros2_mkdocs_site.zip
+check.zip
+*.ipynb
+.DS_Store
