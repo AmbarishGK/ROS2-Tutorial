@@ -1,0 +1,21 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/TF
+      Enabled: false
+      Name: TF
+    - Class: rviz_default_plugins/Image
+      Enabled: true
+      Name: YOLO Image
+      Image Topic: /image_yolo
+      Normalize Range: true
+      Queue Size: 10
+      Unreliable: false
+  Global Options:
+    Fixed Frame: base_link
+  Tools: []
+  Transformation:
+    Current: ""

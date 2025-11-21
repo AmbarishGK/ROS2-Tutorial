@@ -1,0 +1,59 @@
+# docker/Dockerfile.yolo
+FROM osrf/ros:humble-desktop
+
+ENV DEBIAN_FRONTEND=noninteractive
+# Core ROS build tools + runtime deps (RViz, cv_bridge, vision_msgs, image transport)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-venv python3-pip python3-colcon-common-extensions \
+    ros-humble-cv-bridge ros-humble-vision-msgs ros-humble-image-transport \
+    ros-humble-rmw-fastrtps-cpp \
+    mesa-utils libgl1-mesa-glx libglib2.0-0 \
+ && rm -rf /var/lib/apt/lists/*
+
+# -----------------------------
+# Create an isolated Python venv
+# -----------------------------
+RUN python3 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+# Make venv packages visible to system Python (used by ament_python entry points)
+ENV PYTHONPATH="/opt/venv/lib/python3.10/site-packages:${PYTHONPATH}"
+
+
+# Create an isolated Python venv
+RUN python3 -m venv /opt/venv
+ENV VIRTUAL_ENV=/opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONPATH="/opt/venv/lib/python3.10/site-packages:${PYTHONPATH}"
+
+# Upgrade pip inside the venv and install Python deps there
+RUN python -m pip install --no-cache-dir --upgrade pip \
+ && python -m pip install --no-cache-dir opencv-python ultralytics
+
+# -----------------------------
+# Workspace
+# -----------------------------
+WORKDIR /ws/src/ROS2-Tutorial
+# Copy whole repo (keeps things simple & reliable)
+COPY . /ws/src/ROS2-Tutorial
+
+# Build with ROS + venv active
+SHELL ["/bin/bash", "-c"]
+RUN source /opt/ros/humble/setup.bash && \
+    cd /ws && colcon build --symlink-install
+
+# Runtime env
+ENV ROS_DISTRO=humble
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+ENV QT_X11_NO_MITSHM=1
+
+# Entrypoint: source ROS + workspace + keep venv active (PATH already set)
+COPY docker/entrypoint_yolo.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+# Default command: launch YOLO + RViz (paths refer to files inside the image)
+CMD ["ros2", "launch", "image_demo", "yolo_demo.launch.py", \
+     "video_path:=/ws/src/ROS2-Tutorial/examples/data/sample.mp4", \
+     "model_path:=/ws/src/ROS2-Tutorial/examples/data/yolov8n.pt", \
+     "conf_thres:=0.25"]
