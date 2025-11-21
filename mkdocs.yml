@@ -50,7 +50,7 @@ nav:
     - 12. Custom Interfaces and Lifecycle: 12_custom_interfaces_and_lifecycle.md
     - 13. Multi‑Robot and Networking: 13_multi_robot_and_networking.md
   - Examples:
-      - YOLO: docs/examples/yolo.md
+      - YOLO: docs/yolo_example.md
 site_url: https://ambarishgk.github.io/ROS2-Tutorial/
 repo_url: https://github.com/ambarishgk/ROS2-Tutorial
 edit_uri: blob/main/docs/
