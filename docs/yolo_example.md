@@ -163,7 +163,7 @@ Then: **Add → Image → Image Topic = `/image_yolo`**.
 - **Can’t see detections**: increase `conf_thres` downwards (e.g., `0.2`) or check topics with `ros2 topic list`.
 
 ---
-
+<!-- 
 ## Add this page to the docs (MkDocs)
 
 1. Create a new file in your repo: `docs/examples/yolo.md` and paste this content.  
@@ -181,7 +181,7 @@ nav:
 
 > Adjust paths if your mkdocs structure differs. This page is meant to live under **Examples → YOLO**.
 
----
+--- -->
 
 ## Next steps
 
