@@ -51,6 +51,7 @@ nav:
     - 13. Multi‑Robot and Networking: 13_multi_robot_and_networking.md
   - Examples:
       - YOLO: yolo_example.md
+      - MMdetection3d: README_mmdetection3d.md
 site_url: https://ambarishgk.github.io/ROS2-Tutorial/
 repo_url: https://github.com/ambarishgk/ROS2-Tutorial
 edit_uri: blob/main/docs/
