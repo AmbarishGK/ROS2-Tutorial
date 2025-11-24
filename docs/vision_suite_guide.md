@@ -188,18 +188,6 @@ RUN bash -lc "source /opt/ros/${ROS_DISTRO}/setup.bash && cd /ws && colcon build
 
 ---
 
-## MkDocs Navigation
-
-Add this page under **Examples** in `mkdocs.yml`:
-
-```yaml
-nav:
-  - Examples:
-      - Vision Suite (YOLO + mmdet3d): examples/vision_suite_guide.md
-```
-
----
-
 ## Summary
 
 - Use `vision-suite:cu118` for a single container that runs **YOLOv8**, **mmdetection3d**, and **ROS 2**.
