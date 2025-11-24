@@ -1,0 +1,146 @@
+# docker/Dockerfile.vision
+# Combined image: ROS 2 Humble + Ultralytics YOLOv8 + OpenMMLab mmdetection3d (CUDA 11.8)
+FROM nvcr.io/nvidia/cuda:11.8.0-devel-ubuntu22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=UTC \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    PIP_NO_CACHE_DIR=1 \
+    FORCE_CUDA=1 \
+    ROS_DISTRO=humble
+
+# -----------------------
+# System + dev dependencies
+# -----------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    locales tzdata ca-certificates gnupg2 lsb-release software-properties-common \
+    build-essential git curl wget vim nano \
+    python3 python3-pip python3-dev python3-venv \
+    ffmpeg libgl1 libglib2.0-0 x11-apps mesa-utils libgl1-mesa-dri \
+    iputils-ping net-tools less sudo \
+ && rm -rf /var/lib/apt/lists/* && \
+    locale-gen en_US.UTF-8
+
+# -----------------------
+# Python bootstrap
+# -----------------------
+RUN python3 -m pip install --upgrade pip setuptools wheel
+
+# -----------------------
+# PyTorch CUDA 11.8 stack
+# -----------------------
+RUN pip install \
+    torch==2.1.2+cu118 torchvision==0.16.2 torchaudio==2.1.2 \
+    --index-url https://download.pytorch.org/whl/cu118
+
+# -----------------------
+# Ultralytics YOLOv8 + OpenCV
+# -----------------------
+RUN pip install ultralytics==8.2.103 opencv-python==4.10.0.84
+
+# -----------------------
+# Workaround: blinker conflict
+# -----------------------
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_BREAK_SYSTEM_PACKAGES=1
+RUN apt-get update && apt-get remove -y python3-blinker || true && \
+    python3 -m pip install --no-cache-dir --upgrade --ignore-installed "blinker>=1.6"
+
+# -----------------------
+# OpenMMLab core + mmcv/mmdet/mmdet3d (CUDA 11.8 + torch2.1 wheels)
+# -----------------------
+RUN pip install openmim==0.3.9 mmengine==0.10.7 && \
+    mim install "mmcv>=2.0.0rc4,<2.2.0" \
+      -f https://download.openmmlab.com/mmcv/dist/cu118/torch2.1/index.html && \
+    mim install "mmdet>=3.2.0,<3.3.0" "mmdet3d==1.4.0"
+
+# Optional extras commonly used
+RUN pip install open3d==0.19.0 plyfile==1.1.3 pyquaternion==0.9.9 tqdm==4.66.5
+
+# -----------------------
+# Clone mmdetection3d + example checkpoints (optional)
+# -----------------------
+WORKDIR /workspace
+
+# (Optional) clone repo + grab a checkpoint (baked in)
+RUN git clone https://github.com/open-mmlab/mmdetection3d.git /workspace/mmdetection3d && git clone https://github.com/AmbarishGK/Nvidia-Isaac-ROS.git /workspace/Nvidia-Isaac-ROS && \
+    cd /workspace/mmdetection3d && \
+    mim download mmdet3d --config pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class --dest checkpoints
+
+
+# ABI stability for many ROS/OpenCV integrations
+RUN python3 -m pip uninstall -y numpy || true && \
+    python3 -m pip install --no-cache-dir "numpy==1.26.4"
+
+# -----------------------
+# ROS 2 Humble Desktop + vision deps
+# -----------------------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl gnupg2 lsb-release ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN set -e; \
+    curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+      | gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg; \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
+      > /etc/apt/sources.list.d/ros2.list
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-humble-desktop \
+    ros-humble-tf-transformations \
+    ros-humble-vision-msgs ros-humble-image-transport ros-humble-cv-bridge \
+    ros-humble-pcl-ros ros-humble-perception-pcl \
+    ros-humble-rmw-fastrtps-cpp ros-humble-rmw-cyclonedds-cpp \
+    python3-rosdep python3-colcon-common-extensions python3-vcstool \
+ && rm -rf /var/lib/apt/lists/*
+
+RUN rosdep init 2>/dev/null || true && rosdep update
+
+# -----------------------
+# Copy your ROS 2 workspace (optional)
+# -----------------------
+ARG COPY_SRC=0
+ARG WS_DIR=/ws
+ENV WS_DIR=${WS_DIR}
+RUN mkdir -p ${WS_DIR}/src
+ONBUILD COPY . ${WS_DIR}/src/ROS2-Tutorial
+
+SHELL ["/bin/bash", "-lc"]
+RUN source /opt/ros/${ROS_DISTRO}/setup.bash && \
+    if [ -d ${WS_DIR}/src ] && [ "$(ls -A ${WS_DIR}/src)" ]; then \
+        cd ${WS_DIR} && colcon build --symlink-install; \
+    else echo "No sources to build under ${WS_DIR}/src (skipping colcon)."; fi
+
+# -----------------------
+# Runtime defaults
+# -----------------------
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp \
+    QT_X11_NO_MITSHM=1
+
+# Add non-root user (for X11/GUI)
+ARG USERNAME=ros
+ARG UID=1000
+ARG GID=1000
+RUN groupadd -g ${GID} ${USERNAME} || true && \
+    useradd -m -s /bin/bash -u ${UID} -g ${GID} ${USERNAME} && \
+    for g in video render; do getent group "$g" >/dev/null || groupadd "$g"; done && \
+    usermod -aG video,render ${USERNAME} && \
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-${USERNAME} && \
+    chmod 0440 /etc/sudoers.d/90-${USERNAME}
+
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> /etc/bash.bashrc && \
+    echo 'if [ -f /ws/install/setup.bash ]; then source /ws/install/setup.bash; fi' >> /etc/bash.bashrc
+RUN chown -R ${USERNAME}:${USERNAME} /workspace /ws
+# -----------------------
+# Entrypoint + default mode (YOLO)
+# -----------------------
+COPY docker/entrypoint_vision.sh /entrypoint_vision.sh
+RUN chmod +x /entrypoint_vision.sh
+
+USER ${USERNAME}
+WORKDIR /home/${USERNAME}
+
+ENTRYPOINT ["/entrypoint_vision.sh"]
+CMD ["yolo"]
