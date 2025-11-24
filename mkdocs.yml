@@ -53,7 +53,7 @@ nav:
       - YOLO: yolo_example.md
       - MMdetection3d: README_mmdetection3d.md
       - ROS2 and MMdetection3d: README_ros2_mmdetect_container.md
-      - Vision Suite (YOLO + mmdet3d): examples/vision_suite_guide.md
+      - Vision Suite (YOLO + mmdet3d): vision_suite_guide.md
 site_url: https://ambarishgk.github.io/ROS2-Tutorial/
 repo_url: https://github.com/ambarishgk/ROS2-Tutorial
 edit_uri: blob/main/docs/
