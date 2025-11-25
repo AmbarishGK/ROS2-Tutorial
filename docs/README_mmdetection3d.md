@@ -134,7 +134,7 @@ docker start -ai mmdetection3d-1
 docker rm -f mmdetection3d-1
 ```
 
----
+<!-- ---
 
 ## MkDocs Navigation Snippet
 
@@ -150,4 +150,4 @@ nav:
   - Examples:
       - YOLO: yolo_example.md
       - MMDetection3D: examples/mmdetection3d.md
-```
+``` -->
