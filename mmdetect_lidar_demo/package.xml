@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>mmdetect_lidar_demo</name>
+  <version>0.0.1</version>
+  <description>ROS2 node that runs MMDetection3D on LiDAR and publishes 3D bounding boxes as RViz markers.</description>
+
+  <maintainer email="you@example.com">mab</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+  <!-- Python deps like torch, mmdet3d, sensor_msgs_py are installed via pip -->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
