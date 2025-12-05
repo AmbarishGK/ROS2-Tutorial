@@ -33,7 +33,7 @@ docker run --name ros2-mmdetect-test \
   -e DISPLAY=$DISPLAY \
   -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
   -w /workspace/ROS2-Tutorial \
-  -it docker push ambarishgk007/ros2-vision-suite:cu118 bash
+  -it ambarishgk007/ros2-vision-suite:cu118 bash
 ```
 
 Inside the container:
