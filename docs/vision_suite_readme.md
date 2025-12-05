@@ -12,7 +12,7 @@ This document explains how to build and run the three major ROS 2 perception pac
 | **ros2demo** | Basic ROS 2 publisher/subscriber example |
 
 All packages are tested inside the container:  
-**`docker push ambarishgk007/ros2-vision-suite:cu118`** (ROS 2 Humble + PyTorch 2.1.2 + MMCV 2.1.0 + MMDetection3D 1.4.0 + YOLOv8).
+**` ambarishgk007/ros2-vision-suite:cu118`** (ROS 2 Humble + PyTorch 2.1.2 + MMCV 2.1.0 + MMDetection3D 1.4.0 + YOLOv8).
 
 ---
 
@@ -20,7 +20,7 @@ All packages are tested inside the container:
 ## 1.0 Docker pull
 
 ```bash
-docker pull docker push ambarishgk007/ros2-vision-suite:cu118
+docker pull ambarishgk007/ros2-vision-suite:cu118
 ```
 ## 1.1 Linux (with GUI support)
 ```bash
