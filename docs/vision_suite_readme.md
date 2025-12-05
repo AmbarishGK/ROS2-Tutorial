@@ -12,12 +12,16 @@ This document explains how to build and run the three major ROS 2 perception pac
 | **ros2demo** | Basic ROS 2 publisher/subscriber example |
 
 All packages are tested inside the container:  
-**`vision-suite:cu118`** (ROS 2 Humble + PyTorch 2.1.2 + MMCV 2.1.0 + MMDetection3D 1.4.0 + YOLOv8).
+**`docker push ambarishgk007/ros2-vision-suite:cu118`** (ROS 2 Humble + PyTorch 2.1.2 + MMCV 2.1.0 + MMDetection3D 1.4.0 + YOLOv8).
 
 ---
 
 # 1. Running the Container
+## 1.0 Docker pull
 
+```bash
+docker pull docker push ambarishgk007/ros2-vision-suite:cu118
+```
 ## 1.1 Linux (with GUI support)
 ```bash
 xhost +local:root
@@ -28,9 +32,8 @@ docker run --name ros2-mmdetect-test \
   --shm-size=8g \
   -e DISPLAY=$DISPLAY \
   -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
-  -v /home/mab/Desktop/thesi/ROS2-Tutorial:/workspace/ROS2-Tutorial \
   -w /workspace/ROS2-Tutorial \
-  -it vision-suite:cu118 bash
+  -it docker push ambarishgk007/ros2-vision-suite:cu118 bash
 ```
 
 Inside the container:
@@ -77,9 +80,61 @@ ros2 pkg list | grep -E "ros2demo|image_demo|mmdetect_lidar_demo"
 ```bash
 docker exec -it ros2-mmdetect-test bash
 source /opt/ros/humble/setup.bash
-ros2 bag play your_lidar_bag
-```
+cd ~/Desktop/thesi/ROS2-Tutorial
+pip install gdown
+# Start clean
+rm -rf multilidarcalib12
+mkdir multilidarcalib12
+cd multilidarcalib12
 
+# metadata.yaml
+wget "https://drive.google.com/uc?export=download&id=11MwxBbos8EQRUS6XjXPbnRBSrOqXhUC6" \
+     -O metadata.yaml
+
+# bag file: mutlilidarcalib12_0.db3.zstd (≈480 MB)
+gdown --fuzzy "https://drive.google.com/file/d/1qeVQGDzyb72oqKI1ZYWFKiv5jW-6iQdG/view" \
+      -O mutlilidarcalib12_0.db3.zstd
+
+cd ..
+cd ~/Desktop/thesi/ROS2-Tutorial
+
+# Start clean
+rm -rf multilidarcalib13
+mkdir multilidarcalib13
+cd multilidarcalib13
+
+# metadata.yaml
+wget "https://drive.google.com/uc?export=download&id=1GTPLLlX4QLvC1_7FCHnvYmRNH1YUuhHt" \
+     -O metadata.yaml
+
+# bag file: NOTE the spelling "mutli..." to match metadata.yaml
+gdown --fuzzy "https://drive.google.com/file/d/1q4szohuHOTi6MAvWRQXlXD-00gCYgvAK/view" \
+      -O mutlilidarcalib13_0.db3.zstd
+
+cd ..
+
+```
+# Repo Structure
+```bash
+ROS2-Tutorial/
+  multilidarcalib12/
+    metadata.yaml
+    mutlilidarcalib12_0.db3.zstd
+
+  multilidarcalib13/
+    metadata.yaml
+    mutlilidarcalib13_0.db3.zstd
+
+```
+```
+cd ~/Desktop/thesi/ROS2-Tutorial
+
+ros2 bag info multilidarcalib12
+ros2 bag play multilidarcalib12
+# OR run the other 
+ros2 bag info multilidarcalib13
+ros2 bag play multilidarcalib13
+```
 Check:
 ```bash
 ros2 topic list | grep velodyne

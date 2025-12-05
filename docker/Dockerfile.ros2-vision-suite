@@ -37,7 +37,7 @@ RUN pip install \
 # -----------------------
 # Ultralytics YOLOv8 + OpenCV
 # -----------------------
-RUN pip install ultralytics==8.2.103 opencv-python==4.10.0.84
+RUN pip install ultralytics==8.2.103 opencv-python==4.10.0.84 gdown
 
 # -----------------------
 # Workaround: blinker conflict
