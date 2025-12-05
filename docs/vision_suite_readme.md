@@ -202,7 +202,7 @@ ros2 launch image_demo yolo_demo.launch.py
 ```bash
 rviz2
 ```
-
+![image setup](rviz.png)
 Add:
 - Image → `/image_yolo`
 
