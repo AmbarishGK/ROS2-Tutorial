@@ -1,0 +1,85 @@
+FROM dustynv/l4t-ml:r36.2.0
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# 1. System deps for building mmcv and running demos
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    cmake \
+    ninja-build \
+    git \
+    libjpeg-dev \
+    libturbojpeg0-dev \
+    ffmpeg \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libx264-dev \
+    libx265-dev \
+ && rm -rf /var/lib/apt/lists/*
+
+# 2. Python base: keep numpy < 2 and a matching OpenCV
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install "numpy<2" --force-reinstall --no-cache-dir && \
+    python3 -m pip install --no-deps "opencv-python==4.8.1.78"
+
+# 3. Build tooling for mmcv
+RUN python3 -m pip install -U "setuptools>=65" "wheel>=0.38" "packaging>=21"
+
+# 4. OpenMIM and mmengine
+RUN python3 -m pip install -U openmim && \
+    mim install "mmengine>=0.10.4" -i https://pypi.org/simple
+
+# 5. Build mmcv 2.1.0 from source with CUDA ops for Orin (SM 8.7)
+WORKDIR /root
+RUN git clone --depth 1 -b v2.1.0 https://github.com/open-mmlab/mmcv.git /root/mmcv_src
+
+WORKDIR /root/mmcv_src
+RUN MMCV_WITH_OPS=1 FORCE_CUDA=1 TORCH_CUDA_ARCH_LIST="8.7" \
+    python3 -m pip install -v . --no-build-isolation
+
+# 6. Fix blinker version so pip does not choke on the distutils one
+RUN python3 -m pip install --ignore-installed "blinker>=1.7"
+
+# 7. MMDetection and MMDetection3D
+RUN mim install "mmdet>=3.2.0,<3.3.0" "mmdet3d==1.4.0" -i https://pypi.org/simple
+
+# 8. Clone MMDetection3D repo (dev-1.x) for demo scripts and configs
+WORKDIR /root
+RUN git clone https://github.com/open-mmlab/mmdetection3d.git -b dev-1.x /root/mmdetection3d
+
+# 9. Download PointPillars KITTI checkpoint for the demo
+WORKDIR /root/mmdetection3d
+RUN mim download mmdet3d \
+      --config pointpillars_hv_secfpn_8xb6-160e_kitti-3d-car \
+      --dest ./checkpoints
+
+# 10. Ensure KITTI demo data is present
+RUN mkdir -p demo/data/kitti && \
+    cd demo/data/kitti && \
+    wget -q https://raw.githubusercontent.com/open-mmlab/mmdetection3d/master/demo/data/kitti/000008.bin
+
+# 11. Quick sanity check script (optional, not run by default)
+# You can uncomment this to make the build fail if mmdet3d is broken.
+# RUN python3 - << 'EOF'
+# import torch, numpy as np, mmcv, mmengine, mmdet, mmdet3d
+# from mmcv.ops import nms
+# print("torch:", torch.__version__)
+# print("cuda:", torch.version.cuda, "available:", torch.cuda.is_available())
+# print("numpy:", np.__version__)
+# print("mmcv:", mmcv.__version__)
+# print("mmengine:", mmengine.__version__)
+# print("mmdet:", mmdet.__version__)
+# print("mmdet3d:", mmdet3d.__version__)
+# from mmdet3d.apis import init_model, inference_detector
+# config = "configs/pointpillars/pointpillars_hv_secfpn_8xb6-160e_kitti-3d-car.py"
+# ckpt = "checkpoints/hv_pointpillars_secfpn_6x8_160e_kitti-3d-car_20220331_134606-d42d15ed.pth"
+# model = init_model(config, ckpt, device="cuda:0")
+# print("model initialized")
+# res = inference_detector(model, "demo/data/kitti/000008.bin")
+# print("inference ok:", type(res))
+# EOF
+
+WORKDIR /root
+CMD ["/bin/bash"]
