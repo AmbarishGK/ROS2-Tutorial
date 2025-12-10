@@ -33,7 +33,7 @@ Built with:
 ## 1.0 Pull the image
 
 ```bash
-sudo docker pull ambarishgk007/jetson-mmdetetc3d-pth12.2-torch2.1:latest 
+sudo docker pull ambarishgk007/ambarishgk007/jetson-ros2-mmdetetc3d-yolo-pth12.2-torch2.1:latest
 ```
 
 ## 1.1 Start the container
@@ -41,7 +41,7 @@ sudo docker pull ambarishgk007/jetson-mmdetetc3d-pth12.2-torch2.1:latest
 ```bash
 xhost +local:root
 
-sudo docker run --name ros2-vision-suite   --runtime nvidia   --gpus all   --network host   --shm-size=8g   -e DISPLAY=$DISPLAY   -v /tmp/.X11-unix:/tmp/.X11-unix:rw   -it ambarishgk007/jetson-mmdetetc3d-pth12.2-torch2.1:latest  bash
+sudo docker run --name ros2-vision-suite   --runtime nvidia   --gpus all   --network host   --shm-size=8g   -e DISPLAY=$DISPLAY   -v /tmp/.X11-unix:/tmp/.X11-unix:rw   -it ambarishgk007/ambarishgk007/jetson-ros2-mmdetetc3d-yolo-pth12.2-torch2.1:latest  bash
 ```
 
 Inside container:
